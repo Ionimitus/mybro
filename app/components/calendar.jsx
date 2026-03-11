@@ -56,7 +56,16 @@ export default function CalendarView({ dark = false, refreshKey = 0 }) {
   if (loading) return <p className={`py-8 text-sm ${dark ? "text-zinc-500" : "text-text-secondary"}`}>Loading calendar...</p>;
 
   return (
-    <div className="relative">
+    <div>
+      <div className="mb-2 flex justify-end">
+        <button
+          onClick={fetchEvents}
+          className="border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-400 hover:border-white hover:text-white transition-colors"
+          title="Refresh calendar"
+        >
+          ↻ Refresh
+        </button>
+      </div>
       <FullCalendar
         plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"
@@ -65,13 +74,6 @@ export default function CalendarView({ dark = false, refreshKey = 0 }) {
         events={events}
         headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek,timeGridDay" }}
       />
-      <button
-        onClick={fetchEvents}
-        className="absolute right-0 top-0 z-10 border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-400 hover:border-white hover:text-white transition-colors"
-        title="Refresh calendar"
-      >
-        ↻ Refresh
-      </button>
     </div>
   );
 }

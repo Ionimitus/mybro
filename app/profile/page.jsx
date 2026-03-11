@@ -9,6 +9,15 @@ const FITNESS_LEVELS = ["Just starting", "Some experience", "Intermediate", "Adv
 const PROGRAMS = ["PPL (Push Pull Legs)", "Upper/Lower", "Full Body", "Bro Split", "5/3/1", "GZCLP", "Custom"];
 const GOALS = ["Build muscle", "Lose fat", "Improve strength", "Improve endurance", "General fitness", "Athletic performance"];
 
+function Field({ label, children }) {
+  return (
+    <div className="grid gap-2">
+      <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{label}</label>
+      {children}
+    </div>
+  );
+}
+
 export default function Page() {
   const [userId, setUserId] = useState(null);
   const [email, setEmail] = useState("");
@@ -19,6 +28,7 @@ export default function Page() {
   const [program, setProgram] = useState("");
   const [goal, setGoal] = useState(GOALS[0]);
   const [notes, setNotes] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
@@ -39,6 +49,7 @@ export default function Page() {
 
       if (profileRes.data) {
         setFirstName(profileRes.data.first_name ?? "");
+        setDisplayName(profileRes.data.first_name ?? "");
         setLastName(profileRes.data.last_name ?? "");
         setAge(profileRes.data.age ?? "");
         setFitnessLevel(profileRes.data.fitness_level ?? FITNESS_LEVELS[0]);
@@ -63,15 +74,11 @@ export default function Page() {
     setSaving(false);
     if (error) { setErrorMsg(error.message); return; }
     setSuccessMsg("Saved!");
+    setDisplayName(firstName.trim());
     setTimeout(() => setSuccessMsg(""), 3000);
   };
 
-  const Field = ({ label, children }) => (
-    <div className="grid gap-2">
-      <label className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{label}</label>
-      {children}
-    </div>
-  );
+
 
   const inputClass = "min-h-11 border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-white focus:outline-none transition-colors";
   const selectClass = "min-h-11 border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm text-white focus:border-white focus:outline-none transition-colors appearance-none";
@@ -86,7 +93,7 @@ export default function Page() {
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">Account</p>
             <h1 className="text-6xl font-black leading-none tracking-tight md:text-8xl">
-              {loading ? "..." : (firstName || "Your")} <br />
+              {loading ? "..." : (displayName || "Your")} <br />
               <span className="text-zinc-500">Profile</span>
             </h1>
           </div>
