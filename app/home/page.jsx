@@ -39,7 +39,7 @@ const FEATURES = [
     label: "Dashboard",
     heading: "See what you've built",
     body: "Live stats from your actual logs. Consistency rate, muscle groups hit, heaviest lifts, weekly frequency. Real numbers, not motivation poster fluff.",
-    stat: "Real", statLabel: "data from your logs",
+    stat: "Consistent", statLabel: "summarized progress",
   },
 ];
 
@@ -151,7 +151,7 @@ export default function Page() {
             { val: "PPL", label: "& more programs" },
             { val: "AI", label: "conflict-free scheduling" },
             { val: "100+", label: "exercises tracked" },
-            { val: "0", label: "excuses accepted" },
+            { val: "ZERO EXCUSES", label: "NO SLACKING" },
           ].map(({ val, label }) => (
             <div key={label} className="bg-zinc-950 px-6 py-5">
               <p className="text-2xl font-black">{val}</p>
@@ -185,10 +185,10 @@ export default function Page() {
             </div>
             <div className="grid gap-4">
               {[
-                { val: "2024", label: "Founded" },
-                { val: "100+", label: "Exercises in the database" },
+                { val: "2026", label: "Founded" },
+                { val: "30+", label: "Exercises in the database" },
                 { val: "6", label: "Training programs supported" },
-                { val: "0", label: "Excuses tolerated" },
+                { val: "ZERO EXCUSES!!", label: "NO SLACKING" },
               ].map(({ val, label }) => (
                 <div key={label} className="flex items-center justify-between border border-zinc-800 bg-zinc-900 px-6 py-4">
                   <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{label}</p>
@@ -303,7 +303,7 @@ export default function Page() {
       <footer className="border-t border-zinc-800 px-[5%] py-8">
         <div className="container flex flex-wrap items-center justify-between gap-4 text-xs text-zinc-600">
           <p className="font-black text-sm text-white">MyBro</p>
-          <p>© 2024 MyBro. Built for lifters who refuse to settle.</p>
+          <p>© 2026 MyBro. Built for lifters who refuse to settle.</p>
           <div className="flex gap-6">
             <Link href="/login" className="hover:text-zinc-400 transition-colors">Login</Link>
             <Link href="/register" className="hover:text-zinc-400 transition-colors">Register</Link>
