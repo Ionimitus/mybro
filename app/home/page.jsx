@@ -38,9 +38,9 @@ const FEATURES = [
   {
     num: "04",
     label: "Dashboard",
-    heading: "See what you&apos;ve built",
+    heading: "See what you've built",
     body: "Live stats from your actual logs. Consistency rate, muscle groups hit, heaviest lifts, weekly frequency. Real numbers, not motivation poster fluff.",
-    stat: "Real", statLabel: "data from your logs",
+    stat: "Consistent", statLabel: "data from your logs",
   },
 ];
 
@@ -175,7 +175,7 @@ export default function Page() {
             { val: "PPL", label: "& more programs" },
             { val: "AI", label: "conflict-free scheduling" },
             { val: "100+", label: "exercises tracked" },
-            { val: "0", label: "excuses accepted" },
+            { val: "ZERO EXCUSES", label: "gr" },
           ].map(({ val, label }) => (
             <div key={label} className="bg-zinc-950 px-6 py-5">
               <p className="text-2xl font-black">{val}</p>
@@ -209,10 +209,10 @@ export default function Page() {
             </div>
             <div className="grid gap-4">
               {[
-                { val: "2024", label: "Founded" },
+                { val: "2026", label: "Founded" },
                 { val: "100+", label: "Exercises in the database" },
                 { val: "6", label: "Training programs supported" },
-                { val: "0", label: "Excuses tolerated" },
+                { val: "ZERO EXCUSES", label: "Grind hard" },
               ].map(({ val, label }) => (
                 <div key={label} className="flex items-center justify-between border border-zinc-800 bg-zinc-900 px-6 py-4">
                   <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{label}</p>
