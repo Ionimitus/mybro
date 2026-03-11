@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { Navbar1 } from "./components/Navbar1";
 import { Contact17 } from "./components/Contact17";
+import { supabase } from "../../lib/supabase";
 
 const TICKER_ITEMS = [
   "Grow Stronger", "Train Smarter", "Own Your Schedule",
@@ -37,9 +38,9 @@ const FEATURES = [
   {
     num: "04",
     label: "Dashboard",
-    heading: "See what you've built",
+    heading: "See what you&apos;ve built",
     body: "Live stats from your actual logs. Consistency rate, muscle groups hit, heaviest lifts, weekly frequency. Real numbers, not motivation poster fluff.",
-    stat: "Consistent", statLabel: "data from your logs",
+    stat: "Real", statLabel: "data from your logs",
   },
 ];
 
@@ -92,7 +93,15 @@ function FeatureRow({ feat, index }) {
 
 export default function Page() {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setLoggedIn(!!session?.user);
+    })();
+  }, []);
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
@@ -131,14 +140,29 @@ export default function Page() {
             initial={{ opacity: 0, y: 10 }} animate={mounted ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.6 }}
             className="mt-10 flex flex-wrap gap-4">
-            <Link href="/register"
-              className="bg-yellow-400 px-8 py-4 text-sm font-black text-black hover:bg-yellow-300 transition-colors">
-              Start for free →
-            </Link>
-            <Link href="/login"
-              className="border border-zinc-700 px-8 py-4 text-sm font-bold text-zinc-400 hover:border-white hover:text-white transition-colors">
-              Log in
-            </Link>
+            {loggedIn ? (
+              <>
+                <Link href="/dashboard"
+                  className="bg-yellow-400 px-8 py-4 text-sm font-black text-black hover:bg-yellow-300 transition-colors">
+                  Go to Dashboard →
+                </Link>
+                <Link href="/workout-log"
+                  className="border border-zinc-700 px-8 py-4 text-sm font-bold text-zinc-400 hover:border-white hover:text-white transition-colors">
+                  Log a workout
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/register"
+                  className="bg-yellow-400 px-8 py-4 text-sm font-black text-black hover:bg-yellow-300 transition-colors">
+                  Start for free →
+                </Link>
+                <Link href="/login"
+                  className="border border-zinc-700 px-8 py-4 text-sm font-bold text-zinc-400 hover:border-white hover:text-white transition-colors">
+                  Log in
+                </Link>
+              </>
+            )}
           </motion.div>
         </div>
 
