@@ -202,71 +202,6 @@ function CustomSessionInput({ onStart }) {
   );
 }
 
-// ── Muscle Panel ─────────────────────────────────────────────────────────────
-const MUSCLE_COLORS = {
-  Chest:"#ffffff", Back:"#3b82f6", Shoulders:"#8b5cf6",
-  Legs:"#22c55e", Biceps:"#f59e0b", Triceps:"#f97316", Abs:"#ef4444",
-};
-
-function MusclePanel({ sessionMuscles, logs, sessionExercises }) {
-  const setsPerMuscle = {};
-  sessionMuscles.forEach((m) => { setsPerMuscle[m] = 0; });
-  Object.keys(logs).forEach((id) => {
-    const ex = sessionExercises.find((e) => e.id === parseInt(id));
-    if (ex) setsPerMuscle[ex.muscleGroup] = (setsPerMuscle[ex.muscleGroup] ?? 0) + logs[id].filter((s) => s.saved).length;
-  });
-  const maxSets = Math.max(...Object.values(setsPerMuscle), 1);
-  const totalSets = Object.values(setsPerMuscle).reduce((a, b) => a + b, 0);
-
-  return (
-    <div className="sticky top-6 grid gap-4">
-      <div className="border border-zinc-800 bg-zinc-900 p-5">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-500">Target muscles</p>
-        <div className="grid gap-3">
-          {sessionMuscles.map((m) => {
-            const sets = setsPerMuscle[m] ?? 0;
-            const color = MUSCLE_COLORS[m] ?? "#fff";
-            return (
-              <div key={m}>
-                <div className="mb-1 flex items-center justify-between">
-                  <span className="text-sm font-bold">{m}</span>
-                  <span className="text-xs font-black" style={{ color: sets > 0 ? color : "#52525b" }}>
-                    {sets > 0 ? `${sets} sets` : "—"}
-                  </span>
-                </div>
-                <div className="h-1.5 w-full bg-zinc-800 rounded-full">
-                  <div className="h-full rounded-full transition-all duration-500"
-                    style={{ width: sets > 0 ? `${Math.round((sets/maxSets)*100)}%` : "0%", background: color }} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="border border-zinc-800 bg-zinc-900 p-5 text-center">
-        <p className="text-5xl font-black">{totalSets}</p>
-        <p className="mt-1 text-xs text-zinc-500">sets logged</p>
-        {totalSets >= 15 && <p className="mt-3 text-xs font-bold text-green-400">💪 Great volume!</p>}
-        {totalSets >= 5 && totalSets < 15 && <p className="mt-3 text-xs text-zinc-400">Keep pushing →</p>}
-        {totalSets === 0 && <p className="mt-3 text-xs text-zinc-600">Log your first set</p>}
-      </div>
-
-      <div className="border border-zinc-800 bg-zinc-900 p-5">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">Quick tips</p>
-        <div className="grid gap-2 text-xs text-zinc-400">
-          {sessionMuscles.includes("Chest") && <p>🫁 Chest — 3–5 sets of 6–12 reps for hypertrophy</p>}
-          {sessionMuscles.includes("Back") && <p>🔙 Back — focus on full range of motion</p>}
-          {sessionMuscles.includes("Legs") && <p>🦵 Legs — biggest muscle group, don't skip</p>}
-          {sessionMuscles.includes("Shoulders") && <p>💪 Shoulders — warm up rotator cuff first</p>}
-          {sessionMuscles.includes("Abs") && <p>⚡ Abs — best trained at end of session</p>}
-          {(sessionMuscles.includes("Biceps") || sessionMuscles.includes("Triceps")) && <p>💪 Arms — compounds first, isolation after</p>}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── PHASE: active session ───────────────────────────────────────────────────
 function PhaseSession({ userId, session, onFinish }) {
   const muscles = musclesForTitle(session.title);
@@ -301,29 +236,12 @@ function PhaseSession({ userId, session, onFinish }) {
     });
   };
 
-  const [setErrMsg, setSetErrMsg] = useState("");
-
   const saveSet = (exId, idx) => {
-    const set = (logs[exId] ?? [])[idx];
-    setSetErrMsg("");
-
-    // Validate reps
-    if (!set?.reps || set.reps === "") { setSetErrMsg("Reps are required."); return; }
-    const repsNum = parseInt(set.reps);
-    if (isNaN(repsNum) || repsNum < 1 || repsNum > 999) { setSetErrMsg("Reps must be between 1 and 999."); return; }
-
-    // Validate weight (optional but if entered must be valid)
-    if (set?.weight !== "" && set?.weight !== undefined) {
-      const wNum = parseFloat(set.weight);
-      if (isNaN(wNum) || wNum < 0 || wNum > 1000) { setSetErrMsg("Weight must be between 0 and 1000 kg."); return; }
-    }
-
     setLogs((prev) => {
       const sets = [...(prev[exId] ?? [])];
       sets[idx] = { ...sets[idx], saved: true };
       return { ...prev, [exId]: sets };
     });
-    setTimeout(() => setSetErrMsg(""), 2000);
   };
 
   const totalSets = Object.values(logs).reduce((sum, sets) => sum + sets.filter((s) => s.saved).length, 0);
@@ -400,9 +318,7 @@ function PhaseSession({ userId, session, onFinish }) {
   };
 
   return (
-    <div className="mx-auto max-w-6xl py-10">
-      <div className="grid gap-8 lg:grid-cols-[1fr_220px]">
-      <div>
+    <div className="container max-w-2xl py-10">
       {/* Header */}
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
@@ -480,10 +396,9 @@ function PhaseSession({ userId, session, onFinish }) {
                       }
                     </div>
                   ))}
-                  {setErrMsg
-                    ? <p className="mt-1 text-xs font-semibold text-red-400">{setErrMsg}</p>
-                    : <p className="mt-1 text-xs text-zinc-600">Press ✓ or hit Enter to save a set</p>
-                  }
+                  {exLogs.some((s) => !s.saved) && (
+                    <p className="mt-1 text-xs text-zinc-600">Press ✓ or hit Enter to save a set</p>
+                  )}
                 </div>
               )}
             </div>
@@ -498,9 +413,6 @@ function PhaseSession({ userId, session, onFinish }) {
           {finishing ? "Saving…" : `Finish workout · ${totalSets} sets`}
         </button>
         {totalSets === 0 && <p className="text-xs text-zinc-600">Log at least one set to finish</p>}
-      </div>
-      </div>
-      <MusclePanel sessionMuscles={muscles} logs={logs} sessionExercises={sessionExercises} />
       </div>
     </div>
   );

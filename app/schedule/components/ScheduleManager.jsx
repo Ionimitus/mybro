@@ -143,25 +143,6 @@ export function ScheduleManager() {
     await loadAll(userId);
   };
 
-  const [freeWeekSaving, setFreeWeekSaving] = useState(false);
-  const [freeWeekMsg, setFreeWeekMsg] = useState({ text: "", error: false });
-
-  const handleFreeWholeWeek = async () => {
-    if (!userId) return;
-    setFreeWeekSaving(true); setFreeWeekMsg({ text: "", error: false });
-    // Remove existing availability first to avoid duplicates
-    await supabase.from("availability").delete().eq("user_id", userId);
-    const rows = DAYS.map((day) => ({
-      user_id: userId, day_of_week: day, start_time: "06:00", end_time: "22:00",
-    }));
-    const { error } = await supabase.from("availability").insert(rows);
-    setFreeWeekSaving(false);
-    if (error) return setFreeWeekMsg({ text: error.message, error: true });
-    setFreeWeekMsg({ text: "✓ Whole week set as free (6am–10pm every day)", error: false });
-    await loadAll(userId);
-    setTimeout(() => setFreeWeekMsg({ text: "", error: false }), 3000);
-  };
-
   return (
     <>
       {/* Header */}
@@ -273,21 +254,6 @@ export function ScheduleManager() {
               <p className="mt-1 text-xs text-zinc-500">Set recurring weekly windows — the AI schedules workouts inside these.</p>
             </div>
             <div className="p-6">
-              {/* Quick-fill: free whole week */}
-              <div className="mb-5 border border-zinc-700 bg-zinc-800 p-4">
-                <p className="mb-1 text-xs font-bold uppercase tracking-widest text-zinc-400">Quick fill</p>
-                <p className="mb-3 text-xs text-zinc-500">Set every day as free from 6am–10pm in one click. Replaces existing availability.</p>
-                <button type="button" onClick={handleFreeWholeWeek} disabled={freeWeekSaving || !userId}
-                  className="w-full border border-white bg-white px-4 py-2.5 text-sm font-black text-black hover:bg-zinc-200 transition-colors disabled:opacity-50">
-                  {freeWeekSaving ? "Saving..." : "✓ I'm free all week"}
-                </button>
-                {freeWeekMsg.text && (
-                  <p className={"mt-2 text-xs font-semibold " + (freeWeekMsg.error ? "text-red-400" : "text-green-400")}>
-                    {freeWeekMsg.text}
-                  </p>
-                )}
-              </div>
-              <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-600">— or add specific windows —</p>
               <form onSubmit={handleAddAvail} className="grid gap-4">
                 <div>
                   <label className={labelClass}>Day of week</label>
@@ -496,23 +462,15 @@ RULES:
 Respond with ONLY a valid JSON array, no markdown, no explanation:
 [{"title":"Push Day","start":"2025-01-20T09:00:00","end":"2025-01-20T10:30:00","notes":"Chest, shoulders, triceps — bench press, OHP, lateral raises"}]`;
 
-      const groqKey = process.env.NEXT_PUBLIC_GROQ_API_KEY;
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${groqKey}`,
-        },
-        body: JSON.stringify({
-          model: "llama-3.1-8b-instant",
-          messages: [{ role: "user", content: prompt }],
-          temperature: 0.7,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, messages: [{ role: "user", content: prompt }] }),
       });
 
       if (!res.ok) throw new Error("API error " + res.status);
       const data = await res.json();
-      const raw = data.choices?.[0]?.message?.content ?? "";
+      const raw = data.content?.map((b) => b.text ?? "").join("") ?? "";
       const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
       const valid = parsed.filter((s) => s.title && s.start && s.end);
       if (!valid.length) throw new Error("No sessions returned. Try adding more availability first.");

@@ -1,156 +1,325 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { BiSolidStar } from "react-icons/bi";
+import {
+  Button,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  Input,
+} from "@relume_io/relume-ui";
+import Autoplay from "embla-carousel-autoplay";
+import React, { useEffect, useState } from "react";
+import {
+  BiLogoApple,
+  BiLogoFacebook,
+  BiLogoGoogle,
+  BiSolidStar,
+} from "react-icons/bi";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 
-const QUOTES = [
-  { text: "The only bad workout is the one that didn't happen.", author: "Every Lifter Ever", sub: "Consistency beats perfection" },
-  { text: "You don't have to be great to start, but you have to start to be great.", author: "Zig Ziglar", sub: "We can make it" },
-  { text: "Strength does not come from the body. It comes from the will.", author: "Amadeus Wolfgang Mozart", sub: "Mind over matter" },
-  { text: "Your body can stand almost anything. It's your mind you have to convince.", author: "Sir Clyde", sub: "Consistency is the best policy" },
-  { text: "Train insane or remain the same.", author: "Fitness Mantra", sub: "No shortcuts lil bro" },
-];
-
-function QuoteCarousel() {
-  const [idx, setIdx] = useState(0);
-  const [visible, setVisible] = useState(true);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setVisible(false);
-      setTimeout(() => { setIdx((i) => (i + 1) % QUOTES.length); setVisible(true); }, 400);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const q = QUOTES[idx];
-
-  return (
-    <div className="flex flex-col items-center justify-center h-full px-10 py-16 text-center">
-      <div className="flex gap-1 mb-8">
-        {[...Array(5)].map((_, i) => <BiSolidStar key={i} className="size-5 text-white" />)}
-      </div>
-      <blockquote className="text-2xl font-black leading-snug md:text-3xl transition-opacity duration-300"
-        style={{ opacity: visible ? 1 : 0 }}>
-        "{q.text}"
-      </blockquote>
-      <div className="mt-8 border-t border-zinc-700 pt-6 w-full max-w-xs">
-        <p className="font-bold text-sm">{q.author}</p>
-        <p className="text-xs text-zinc-500 mt-0.5">{q.sub}</p>
-      </div>
-      <div className="flex gap-2 mt-8">
-        {QUOTES.map((_, i) => (
-          <button key={i} onClick={() => setIdx(i)}
-            className={"h-1.5 rounded-full transition-all duration-300 " + (i === idx ? "w-6 bg-white" : "w-1.5 bg-zinc-600")} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export function Signup6() {
-  const router = useRouter();
+const useForm = (router) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordErrors, setPasswordErrors] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handlePasswordChange = (e) => {
-    const val = e.target.value;
-    setPassword(val);
-    const errs = [];
-    if (val.length < 6) errs.push("At least 6 characters");
-    if (!/[0-9]/.test(val)) errs.push("At least one number");
-    if (!/[A-Z]/.test(val)) errs.push("At least one uppercase letter");
-    setPasswordErrors(errs);
+  const handleSetEmail = (e) => {
+    setEmail(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSetPassword = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setError("");
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Please enter a valid email address."); return; }
-    if (password.length < 6) { setError("Password must be at least 6 characters."); return; }
-    if (!/[0-9]/.test(password)) { setError("Password must contain at least one number."); return; }
-    if (!/[A-Z]/.test(password)) { setError("Password must contain at least one uppercase letter."); return; }
-    if (password !== confirmPassword) { setError("Passwords do not match."); return; }
     setLoading(true);
+
     try {
-      const { error: signUpError } = await supabase.auth.signUp({ email, password });
-      if (signUpError) { setError(signUpError.message); return; }
+      if (!supabase) {
+        setError(
+          "Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.",
+        );
+        return;
+      }
+
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+
       router.push("/dashboard");
-    } catch { setError("An unexpected error occurred. Please try again."); }
-    finally { setLoading(false); }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const inputClass = "w-full border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-white focus:outline-none transition-colors";
-  const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-widest text-zinc-500";
+  return {
+    email,
+    handleSetEmail,
+    password,
+    handleSetPassword,
+    handleSubmit,
+    error,
+    loading,
+  };
+};
 
+const useCarousel = () => {
+  const [api, setApi] = useState();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+    setCurrent(api.selectedScrollSnap() + 1);
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
+
+  const options = {
+    loop: true,
+  };
+
+  const plugins = [
+    Autoplay({
+      delay: 5000,
+    }),
+  ];
+
+  const handleDotClick = (index) => () => {
+    if (api) {
+      api.scrollTo(index);
+    }
+  };
+
+  const dotClassName = (index) => {
+    return `mx-[3px] size-2 rounded-full ${current === index + 1 ? "bg-black" : "bg-neutral-darker/40"}`;
+  };
+
+  return {
+    options,
+    plugins,
+    api,
+    setApi,
+    handleDotClick,
+    dotClassName,
+  };
+};
+
+export function Signup6() {
+  const carouselState = useCarousel();
+  const router = useRouter();
+  const formState = useForm(router);
   return (
-    <section className="min-h-screen bg-zinc-950 text-white">
-      <div className="grid min-h-screen lg:grid-cols-2">
-
-        {/* Left: Form */}
-        <div className="flex flex-col justify-center px-8 py-16 md:px-16">
-          <Link href="/home" className="mb-12 text-xl font-black tracking-tight text-white">MyBro</Link>
+    <section id="relume">
+      <div className="relative grid min-h-screen grid-cols-1 justify-center overflow-auto lg:grid-cols-2">
+        <div className="absolute left-0 right-0 top-0 z-10 flex h-16 items-center justify-center px-[5%] md:h-18 lg:justify-start">
+          <a href="#">
+            <span className="text-2xl font-black tracking-tight text-white">MyBro</span>
+          </a>
+        </div>
+        <div className="relative mx-[5vw] flex items-center justify-center pb-16 pt-20 md:pb-20 md:pt-24 lg:py-20">
           <div className="mx-auto w-full max-w-sm">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-zinc-500">Get started</p>
-            <h1 className="mb-2 text-4xl font-black leading-tight md:text-5xl">Create your account</h1>
-            <p className="mb-8 text-sm text-zinc-400">Join MyBro and start training smarter.</p>
-
-            <form onSubmit={handleSubmit} className="grid gap-4">
-              <div>
-                <label className={labelClass}>Email</label>
-                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com" className={inputClass} />
-              </div>
-              <div>
-                <label className={labelClass}>Password</label>
-                <input type="password" required value={password} onChange={handlePasswordChange}
-                  placeholder="Min 6 chars, 1 number, 1 uppercase" className={inputClass} />
-                {password && (
-                  <ul className="mt-2 grid gap-1">
-                    {["At least 6 characters", "At least one number", "At least one uppercase letter"].map((rule) => {
-                      const passing = !passwordErrors.includes(rule);
-                      return (
-                        <li key={rule} className={"text-xs flex items-center gap-1.5 " + (passing ? "text-green-400" : "text-zinc-500")}>
-                          <span>{passing ? "✓" : "○"}</span> {rule}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </div>
-              <div>
-                <label className={labelClass}>Confirm Password</label>
-                <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Re-enter your password" className={inputClass} />
-                {confirmPassword && password !== confirmPassword && <p className="mt-1 text-xs text-red-400">Passwords do not match</p>}
-                {confirmPassword && password === confirmPassword && confirmPassword.length > 0 && <p className="mt-1 text-xs text-green-400">✓ Passwords match</p>}
-              </div>
-              {error && <p className="text-sm font-semibold text-red-400">{error}</p>}
-              <button type="submit" disabled={loading}
-                className="mt-2 bg-white px-6 py-3 text-sm font-black text-black hover:bg-zinc-200 transition-colors disabled:opacity-50">
-                {loading ? "Creating account..." : "Create account →"}
-              </button>
+            <div className="mx-auto mb-8 w-full max-w-lg text-center md:mb-10 lg:mb-12">
+              <h1 className="mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">
+                Join MyBro
+              </h1>
+              <p className="md:text-md">
+                Create your account and start tracking your progress today
+              </p>
+            </div>
+            <form
+              className="grid grid-cols-1 gap-4"
+              onSubmit={formState.handleSubmit}
+            >
+              <Input
+                type="email"
+                id="email"
+                placeholder="Email"
+                required={true}
+                value={formState.email}
+                onChange={formState.handleSetEmail}
+              />
+              <Input
+                type="password"
+                id="password"
+                placeholder="Password"
+                required={true}
+                value={formState.password}
+                onChange={formState.handleSetPassword}
+              />
+              {formState.error && (
+                <p className="text-sm text-red-600">{formState.error}</p>
+              )}
+              <Button title="Register" disabled={formState.loading}>
+                {formState.loading ? "Registering..." : "Register"}
+              </Button>
+              <div className="my-3 h-px w-full bg-border-primary md:my-4" />
+              <Button
+                variant="secondary"
+                title="Next"
+                iconLeft={<BiLogoGoogle className="size-6" />}
+                className="gap-x-3"
+              >
+                Next
+              </Button>
+              <Button
+                variant="secondary"
+                title="Tell us about your goals"
+                iconLeft={<BiLogoFacebook className="size-6" />}
+                className="gap-x-3"
+              >
+                Tell us about your goals
+              </Button>
+              <Button
+                variant="secondary"
+                title="What do you want to achieve with your training?"
+                iconLeft={<BiLogoApple className="size-6" />}
+                className="gap-x-3"
+              >
+                What do you want to achieve with your training?
+              </Button>
             </form>
-
-            <p className="mt-6 text-center text-sm text-zinc-500">
-              Already have an account?{" "}
-              <Link href="/login" className="font-bold text-white underline hover:text-zinc-300">Log in</Link>
-            </p>
+            <div className="mt-5 inline-flex w-full items-center justify-center gap-x-1 text-center md:mt-6">
+              <p>First name</p>
+            </div>
           </div>
         </div>
-
-        {/* Right: Motivational Quotes */}
-        <div className="hidden lg:flex flex-col bg-zinc-900 border-l border-zinc-800">
-          <QuoteCarousel />
+        <div className="flex items-center justify-center bg-background-secondary px-[5vw] pb-20 pt-16 md:py-20">
+          <Carousel
+            setApi={carouselState.setApi}
+            opts={carouselState.options}
+            plugins={carouselState.plugins}
+            className="overflow-hidden"
+          >
+            <div className="relative">
+              <CarouselContent className="pb-7">
+                <CarouselItem className="max-w-full">
+                  <div className="mx-auto flex h-full max-w-lg flex-col items-center justify-center text-center">
+                    <div className="flex">
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                    </div>
+                    <blockquote className="my-6 text-xl font-bold md:my-8 md:text-2xl">
+                      "It always seems impossible until it's done."
+                    </blockquote>
+                    <div className="flex w-full flex-col items-center text-center md:w-auto md:flex-row md:text-left">
+                      <div className="rb-4 mb-4 md:mb-0 md:mr-5">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-700 text-xs font-bold">MB</div>
+                      </div>
+                      <div className="rb-4 mb-4 md:mb-0">
+                        <p className="font-semibold">Register</p>
+                        <p>Already have an account?</p>
+                      </div>
+                      <div className="mx-5 hidden w-px self-stretch bg-black md:block" />
+                      <div>
+                        <span className="text-xs font-bold text-zinc-400">★</span>
+                      </div>
+                    </div>
+                  </div>
+                </CarouselItem>
+                <CarouselItem className="max-w-full">
+                  <div className="mx-auto flex h-full max-w-lg flex-col items-center justify-center text-center">
+                    <div className="flex">
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                    </div>
+                    <blockquote className="my-6 text-xl font-bold md:my-8 md:text-2xl">
+                      "It always seems impossible until it's done."
+                    </blockquote>
+                    <div className="flex w-full flex-col items-center text-center md:w-auto md:flex-row md:text-left">
+                      <div className="rb-4 mb-4 md:mb-0 md:mr-5">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-700 text-xs font-bold">MB</div>
+                      </div>
+                      <div className="rb-4 mb-4 md:mb-0">
+                        <p className="font-semibold">Register</p>
+                        <p>Already have an account?</p>
+                      </div>
+                      <div className="mx-5 hidden w-px self-stretch bg-black md:block" />
+                      <div>
+                        <span className="text-xs font-bold text-zinc-400">★</span>
+                      </div>
+                    </div>
+                  </div>
+                </CarouselItem>
+                <CarouselItem className="max-w-full">
+                  <div className="mx-auto flex h-full max-w-lg flex-col items-center justify-center text-center">
+                    <div className="flex">
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                      <BiSolidStar className="size-6" />
+                    </div>
+                    <blockquote className="my-6 text-xl font-bold md:my-8 md:text-2xl">
+                      "It always seems impossible until it's done."
+                    </blockquote>
+                    <div className="flex w-full flex-col items-center text-center md:w-auto md:flex-row md:text-left">
+                      <div className="rb-4 mb-4 md:mb-0 md:mr-5">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-700 text-xs font-bold">MB</div>
+                      </div>
+                      <div className="rb-4 mb-4 md:mb-0">
+                        <p className="font-semibold">Register</p>
+                        <p>Already have an account?</p>
+                      </div>
+                      <div className="mx-5 hidden w-px self-stretch bg-black md:block" />
+                      <div>
+                        <span className="text-xs font-bold text-zinc-400">★</span>
+                      </div>
+                    </div>
+                  </div>
+                </CarouselItem>
+              </CarouselContent>
+              <div className="flex w-full items-center justify-center gap-12">
+                <CarouselPrevious
+                  className="static hidden -translate-y-0 bg-transparent md:flex"
+                  variant="link"
+                />
+                <div className="flex items-center justify-center">
+                  <button
+                    onClick={carouselState.handleDotClick(0)}
+                    className={carouselState.dotClassName(0)}
+                  />
+                  <button
+                    onClick={carouselState.handleDotClick(1)}
+                    className={carouselState.dotClassName(1)}
+                  />
+                  <button
+                    onClick={carouselState.handleDotClick(2)}
+                    className={carouselState.dotClassName(2)}
+                  />
+                </div>
+                <CarouselNext
+                  className="static hidden -translate-y-0 bg-transparent md:flex"
+                  variant="link"
+                />
+              </div>
+            </div>
+          </Carousel>
         </div>
-
+        <footer className="absolute bottom-0 left-0 right-0 flex h-16 items-center justify-center px-[5%] md:h-18 lg:justify-start">
+          <p className="text-sm">© 2024 MyBro</p>
+        </footer>
       </div>
     </section>
   );

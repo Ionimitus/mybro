@@ -54,32 +54,15 @@ export default function Page() {
   const handleSave = async (e) => {
     e.preventDefault();
     if (!userId) return;
-    setErrorMsg(""); setSuccessMsg("");
-
-    // Validate first name
-    if (!firstName.trim()) { setErrorMsg("First name is required."); return; }
-    if (firstName.trim().length < 2) { setErrorMsg("First name must be at least 2 characters."); return; }
-
-    // Validate age range
-    if (age !== "" && age !== null) {
-      const ageNum = parseInt(age);
-      if (isNaN(ageNum) || ageNum < 13 || ageNum > 100) {
-        setErrorMsg("Age must be between 13 and 100."); return;
-      }
-    }
-
-    // Validate notes length
-    if (notes && notes.length > 500) { setErrorMsg("Notes must be under 500 characters."); return; }
-
-    setSaving(true);
+    setSaving(true); setSuccessMsg(""); setErrorMsg("");
     const { error } = await supabase.from("profiles").upsert({
-      user_id: userId, first_name: firstName.trim(), last_name: lastName.trim(),
+      user_id: userId, first_name: firstName, last_name: lastName,
       age: age ? parseInt(age) : null, fitness_level: fitnessLevel,
       program, goal, notes, updated_at: new Date().toISOString(),
     }, { onConflict: "user_id" });
     setSaving(false);
     if (error) { setErrorMsg(error.message); return; }
-    setSuccessMsg("✓ Profile saved!");
+    setSuccessMsg("Saved!");
     setTimeout(() => setSuccessMsg(""), 3000);
   };
 

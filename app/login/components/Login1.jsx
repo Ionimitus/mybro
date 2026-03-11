@@ -1,8 +1,9 @@
 "use client";
 
+import { Button, Input, Label } from "@relume_io/relume-ui";
 import React, { useState } from "react";
+import { BiLogoGoogle } from "react-icons/bi";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 
 export function Login1() {
@@ -12,75 +13,118 @@ export function Login1() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setError("");
-
-    if (!email) { setError("Email is required."); return; }
-    if (!password) { setError("Password is required."); return; }
-
     setLoading(true);
+
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInError) { setError(signInError.message); return; }
+      if (!supabase) {
+        setError(
+          "Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.",
+        );
+        return;
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        setError(signInError.message);
+        return;
+      }
+
       router.push("/dashboard");
-    } catch {
+    } catch (err) {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const inputClass = "w-full border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white placeholder-zinc-600 focus:border-white focus:outline-none transition-colors";
-  const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-widest text-zinc-500";
-
   return (
-    <section className="min-h-screen bg-zinc-950 text-white px-[5%]">
-      <div className="relative flex min-h-screen flex-col justify-center py-24">
-
-        {/* Top bar */}
-        <div className="absolute left-0 right-0 top-0 flex h-16 w-full items-center justify-between px-[5%]">
-          <Link href="/home" className="text-xl font-black tracking-tight text-white">MyBro</Link>
-          <p className="hidden text-sm text-zinc-500 md:block">Don't have an account?{" "}
-            <Link href="/register" className="font-bold text-white underline hover:text-zinc-300">Sign up</Link>
-          </p>
+    <section id="relume" className="px-[5%]">
+      <div className="relative flex min-h-svh flex-col justify-center overflow-auto py-24 lg:py-20">
+        <div className="absolute left-0 right-0 top-0 flex h-16 w-full items-center justify-between md:h-18">
+          <a href="#">
+            <span className="text-2xl font-black tracking-tight text-white">MyBro</span>
+          </a>
+          <div className="inline-flex gap-x-1">
+            <p className="hidden md:block">Join MyBro and start training</p>
+          </div>
         </div>
-
-        {/* Form */}
         <div className="mx-auto w-full max-w-sm">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-zinc-500">Welcome back</p>
-          <h1 className="mb-2 text-4xl font-black leading-tight md:text-5xl">Log in</h1>
-          <p className="mb-8 text-sm text-zinc-400">Pick up where you left off with your training.</p>
-
-          <form onSubmit={handleSubmit} className="grid gap-4">
-            <div>
-              <label className={labelClass}>Email</label>
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com" className={inputClass} />
+          <div className="rb-6 mb-6 text-center md:mb-8">
+            <h1 className="mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">
+              Login
+            </h1>
+            <p className="md:text-md">
+              Pick up where you left off with your training
+            </p>
+          </div>
+          <form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
+            <div className="grid w-full items-center">
+              <Label htmlFor="email" className="mb-2">
+                Email
+              </Label>
+              <Input
+                type="email"
+                id="email"
+                required={true}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
-            <div>
-              <label className={labelClass}>Password</label>
-              <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
-                placeholder="Your password" className={inputClass} />
+            <div className="grid w-full items-center">
+              <Label htmlFor="password" className="mb-2">
+                Password
+              </Label>
+              <Input
+                type="password"
+                id="password"
+                required={true}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
-            {error && <p className="text-sm font-semibold text-red-400">{error}</p>}
-            <button type="submit" disabled={loading}
-              className="mt-2 bg-white px-6 py-3 text-sm font-black text-black hover:bg-zinc-200 transition-colors disabled:opacity-50">
-              {loading ? "Signing in..." : "Sign in →"}
-            </button>
+            {error && (
+              <p className="text-sm text-red-600">
+                {error}
+              </p>
+            )}
+            <div className="grid grid-cols-1 gap-4">
+              <Button
+                type="submit"
+                variant={undefined}
+                size={undefined}
+                iconLeft={undefined}
+                iconRight={undefined}
+                disabled={loading}
+              >
+                {loading ? "Signing in..." : "Sign in"}
+              </Button>
+              <Button
+                variant="secondary"
+                size={undefined}
+                iconLeft={<BiLogoGoogle className="size-6" />}
+                iconRight={undefined}
+                className="gap-x-3"
+              >
+                Continue with Google
+              </Button>
+            </div>
           </form>
-
-          <p className="mt-6 text-center text-sm text-zinc-500">
-            New here?{" "}
-            <Link href="/register" className="font-bold text-white underline hover:text-zinc-300">Create an account</Link>
-          </p>
+          <div className="mt-5 w-full text-center md:mt-6">
+            <a href="/register" className="underline">
+              New here? Create an account
+            </a>
+          </div>
         </div>
-
-        {/* Footer */}
-        <footer className="absolute bottom-0 left-0 right-0 flex h-16 w-full items-center justify-center">
-          <p className="text-xs text-zinc-600">© 2025 MyBro. All rights reserved.</p>
+        <footer className="absolute bottom-0 left-0 right-0 flex h-16 w-full items-center justify-center md:h-18">
+          <p className="text-sm">© 2024 MyBro</p>
         </footer>
-
       </div>
     </section>
   );
