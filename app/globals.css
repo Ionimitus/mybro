@@ -24,3 +24,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* FullCalendar today cell — make date number visible against white bg */
+.fc .fc-day-today .fc-daygrid-day-number {
+  color: #000 !important;
+  font-weight: 900;
+}
+.fc .fc-day-today {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+.fc .fc-day-today .fc-col-header-cell-cushion {
+  color: #000 !important;
+}

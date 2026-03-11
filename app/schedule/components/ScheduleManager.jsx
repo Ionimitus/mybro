@@ -238,7 +238,7 @@ export function ScheduleManager() {
                     <input className={inputClass} type="datetime-local" value={busyEnd} onChange={(e) => setBusyEnd(e.target.value)} disabled={busySaving} />
                   </div>
                 </div>
-                {busyMsg.text && <p className={"text-xs font-semibold " + (busyMsg.error ? "text-red-400" : "text-green-400")}>{busyMsg.text}</p>}
+                {busyMsg.text && <p className={"text-xs font-semibold " + (busyMsg.error ? "text-red-400" : "text-yellow-400")}>{busyMsg.text}</p>}
                 <button type="submit" disabled={busySaving || !userId} className="bg-white px-6 py-3 text-sm font-black text-black hover:bg-zinc-200 transition-colors disabled:opacity-50">
                   {busySaving ? "Saving..." : "Add busy block"}
                 </button>
@@ -282,7 +282,7 @@ export function ScheduleManager() {
                   {freeWeekSaving ? "Saving..." : "✓ I'm free all week"}
                 </button>
                 {freeWeekMsg.text && (
-                  <p className={"mt-2 text-xs font-semibold " + (freeWeekMsg.error ? "text-red-400" : "text-green-400")}>
+                  <p className={"mt-2 text-xs font-semibold " + (freeWeekMsg.error ? "text-red-400" : "text-yellow-400")}>
                     {freeWeekMsg.text}
                   </p>
                 )}
@@ -305,7 +305,7 @@ export function ScheduleManager() {
                     <input className={inputClass} type="time" value={availEnd} onChange={(e) => setAvailEnd(e.target.value)} disabled={availSaving} />
                   </div>
                 </div>
-                {availMsg.text && <p className={"text-xs font-semibold " + (availMsg.error ? "text-red-400" : "text-green-400")}>{availMsg.text}</p>}
+                {availMsg.text && <p className={"text-xs font-semibold " + (availMsg.error ? "text-red-400" : "text-yellow-400")}>{availMsg.text}</p>}
                 <button type="submit" disabled={availSaving || !userId} className="bg-white px-6 py-3 text-sm font-black text-black hover:bg-zinc-200 transition-colors disabled:opacity-50">
                   {availSaving ? "Saving..." : "Save availability"}
                 </button>
@@ -335,7 +335,9 @@ export function ScheduleManager() {
       <ScheduledWorkoutsList userId={userId} calendarKey={calendarKey} onDelete={() => setCalendarKey((k) => k + 1)} />
 
       {/* AI Scheduler */}
-      <AISchedulerSection userId={userId} availability={availability} busyEvents={busyEvents} onScheduled={() => setCalendarKey((k) => k + 1)} />
+      <div id="ai-scheduler">
+        <AISchedulerSection userId={userId} availability={availability} busyEvents={busyEvents} onScheduled={() => setCalendarKey((k) => k + 1)} />
+      </div>
     </>
   );
 }
@@ -392,7 +394,7 @@ function ScheduledWorkoutsList({ userId, calendarKey, onDelete }) {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="font-bold truncate">{s.title}</p>
-                    {s.completed && <span className="shrink-0 text-xs font-bold text-green-400">✓ Done</span>}
+                    {s.completed && <span className="shrink-0 text-xs font-bold text-yellow-400">✓ Done</span>}
                     {s.ai_generated && <span className="shrink-0 text-xs text-zinc-600">AI</span>}
                   </div>
                   <p className="text-xs text-zinc-500">
@@ -689,7 +691,7 @@ Respond with ONLY a valid JSON array, no markdown, no explanation:
             </div>
 
             {error && <p className="mb-4 text-xs font-semibold text-red-400">{error}</p>}
-            {success && <p className="mb-4 text-xs font-semibold text-green-400">{success}</p>}
+            {success && <p className="mb-4 text-xs font-semibold text-yellow-400">{success}</p>}
 
             <div className="flex gap-3">
               <button onClick={() => { setStep(STEP.PROGRAM); setSuggestions([]); }}

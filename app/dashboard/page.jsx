@@ -87,6 +87,17 @@ function MuscleBreakdown({ logs }) {
   );
 }
 
+function StatCard({ label, value, sub, accent, loading }) {
+  return (
+    <div className="relative overflow-hidden border border-zinc-800 bg-zinc-900 p-6">
+      {accent && <div className="absolute right-0 top-0 h-1 w-full" style={{ background: accent }} />}
+      <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-zinc-500">{label}</p>
+      <p className="mb-1 text-4xl font-black text-white">{loading ? "—" : value}</p>
+      {sub && <p className="text-xs text-zinc-500">{sub}</p>}
+    </div>
+  );
+}
+
 export default function Page() {
   const [uid, setUid] = useState(null);
   const [stats, setStats] = useState(null);
@@ -157,14 +168,7 @@ export default function Page() {
     return "Good evening";
   };
 
-  const StatCard = ({ label, value, sub, accent }) => (
-    <div className="relative overflow-hidden border border-zinc-800 bg-zinc-900 p-6">
-      {accent && <div className="absolute right-0 top-0 h-1 w-full" style={{ background: accent }} />}
-      <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-zinc-500">{label}</p>
-      <p className="mb-1 text-4xl font-black text-white">{loading ? "—" : value}</p>
-      {sub && <p className="text-xs text-zinc-500">{sub}</p>}
-    </div>
-  );
+
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
@@ -183,7 +187,10 @@ export default function Page() {
             <Link href="/workout-log" className="border border-white bg-white px-6 py-3 text-sm font-bold text-black transition-colors hover:bg-zinc-200">
               Log Workout
             </Link>
-            <Link href="/schedule" className="border border-zinc-700 px-6 py-3 text-sm font-bold text-white transition-colors hover:border-white">
+            <Link href="/schedule#ai-scheduler" className="border border-yellow-400 px-6 py-3 text-sm font-bold text-yellow-400 transition-colors hover:bg-yellow-400 hover:text-black">
+              ✦ AI Scheduler
+            </Link>
+            <Link href="/schedule" className="border border-zinc-700 px-6 py-3 text-sm font-bold text-zinc-400 transition-colors hover:border-white hover:text-white">
               View Schedule
             </Link>
           </div>
@@ -195,12 +202,12 @@ export default function Page() {
         <div className="container">
           <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-zinc-500">Your stats</p>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-            <StatCard label="Total workouts" value={stats?.totalWorkouts ?? 0} sub="Sessions logged all time" accent="#ffffff" />
-            <StatCard label="This week" value={stats?.weeklyDays ? `${stats.weeklyDays}x` : "0x"} sub="Training days in last 7 days" accent="#22c55e" />
-            <StatCard label="Muscle groups" value={stats?.muscleGroups ?? 0} sub="Unique groups trained" accent="#3b82f6" />
-            <StatCard label="Heaviest lift" value={stats?.heaviestLift ? `${stats.heaviestLift}kg` : "—"} sub="Top logged weight" accent="#f59e0b" />
-            <StatCard label="Consistency" value={stats?.consistency !== undefined ? `${stats.consistency}%` : "—"} sub="Workouts vs scheduled this month" accent="#8b5cf6" />
-            <StatCard label="Program" value={stats?.program ?? "—"} sub="Your current split" accent="#ef4444" />
+            <StatCard label="Total workouts" value={stats?.totalWorkouts ?? 0} sub="Sessions logged all time" accent="#facc15" />
+            <StatCard label="This week" value={stats?.weeklyDays ? `${stats.weeklyDays}x` : "0x"} sub="Training days in last 7 days" accent="#facc15" />
+            <StatCard label="Muscle groups" value={stats?.muscleGroups ?? 0} sub="Unique groups trained" accent="#eab308" />
+            <StatCard label="Heaviest lift" value={stats?.heaviestLift ? `${stats.heaviestLift}kg` : "—"} sub="Top logged weight" accent="#fde047" />
+            <StatCard label="Consistency" value={stats?.consistency !== undefined ? `${stats.consistency}%` : "—"} sub="Workouts vs scheduled this month" accent="#facc15" />
+            <StatCard label="Program" value={stats?.program ?? "—"} sub="Your current split" accent="#eab308" />
           </div>
         </div>
       </section>

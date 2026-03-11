@@ -204,8 +204,8 @@ function CustomSessionInput({ onStart }) {
 
 // ── Muscle Panel ─────────────────────────────────────────────────────────────
 const MUSCLE_COLORS = {
-  Chest:"#ffffff", Back:"#3b82f6", Shoulders:"#8b5cf6",
-  Legs:"#22c55e", Biceps:"#f59e0b", Triceps:"#f97316", Abs:"#ef4444",
+  Chest:"#facc15", Back:"#eab308", Shoulders:"#fde047",
+  Legs:"#ca8a04", Biceps:"#facc15", Triceps:"#fde047", Abs:"#eab308",
 };
 
 function MusclePanel({ sessionMuscles, logs, sessionExercises }) {
@@ -247,7 +247,7 @@ function MusclePanel({ sessionMuscles, logs, sessionExercises }) {
       <div className="border border-zinc-800 bg-zinc-900 p-5 text-center">
         <p className="text-5xl font-black">{totalSets}</p>
         <p className="mt-1 text-xs text-zinc-500">sets logged</p>
-        {totalSets >= 15 && <p className="mt-3 text-xs font-bold text-green-400">💪 Great volume!</p>}
+        {totalSets >= 15 && <p className="mt-3 text-xs font-bold text-yellow-400">💪 Great volume!</p>}
         {totalSets >= 5 && totalSets < 15 && <p className="mt-3 text-xs text-zinc-400">Keep pushing →</p>}
         {totalSets === 0 && <p className="mt-3 text-xs text-zinc-600">Log your first set</p>}
       </div>
@@ -464,7 +464,7 @@ function PhaseSession({ userId, session, onFinish }) {
                   </div>
                   {exLogs.map((set, idx) => (
                     <div key={idx} className="mb-2 grid grid-cols-[2rem_1fr_1fr_2rem] items-center gap-2">
-                      <span className={"text-xs font-black " + (set.saved ? "text-green-400" : "text-zinc-600")}>{idx + 1}</span>
+                      <span className={"text-xs font-black " + (set.saved ? "text-yellow-400" : "text-zinc-600")}>{idx + 1}</span>
                       <input type="number" min="0" step="0.5" placeholder="kg"
                         value={set.weight} onChange={(e) => updateSet(ex.id, idx, "weight", e.target.value)}
                         disabled={set.saved}
@@ -475,7 +475,7 @@ function PhaseSession({ userId, session, onFinish }) {
                         onKeyDown={(e) => e.key === "Enter" && !set.saved && saveSet(ex.id, idx)}
                         className="border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-white focus:outline-none disabled:opacity-50" />
                       {set.saved
-                        ? <span className="text-center text-green-400 text-sm">✓</span>
+                        ? <span className="text-center text-yellow-400 text-sm">✓</span>
                         : <button onClick={() => saveSet(ex.id, idx)} className="text-center text-xs text-zinc-500 hover:text-white transition-colors font-black">✓</button>
                       }
                     </div>
@@ -494,7 +494,7 @@ function PhaseSession({ userId, session, onFinish }) {
       {/* Finish */}
       <div className="flex items-center gap-4">
         <button onClick={handleFinish} disabled={finishing || totalSets === 0}
-          className="bg-white px-10 py-4 text-sm font-black text-black hover:bg-zinc-200 transition-colors disabled:opacity-40">
+          className="bg-yellow-400 px-10 py-4 text-sm font-black text-black hover:bg-yellow-300 transition-colors disabled:opacity-40">
           {finishing ? "Saving…" : `Finish workout · ${totalSets} sets`}
         </button>
         {totalSets === 0 && <p className="text-xs text-zinc-600">Log at least one set to finish</p>}
@@ -515,12 +515,12 @@ function PhaseDone({ summary, onAgain }) {
       <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">Session complete</p>
       <h1 className="mb-3 text-5xl font-black">Workout logged.</h1>
       {isRetroactive && (
-        <p className="mb-6 text-sm text-green-400">
+        <p className="mb-6 text-sm text-yellow-400">
           ✓ Saved to {summary.date.toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" })} on your calendar
         </p>
       )}
       {!isRetroactive && (
-        <p className="mb-6 text-sm text-green-400">✓ Marked green on today's calendar</p>
+        <p className="mb-6 text-sm text-yellow-400">✓ Marked green on today's calendar</p>
       )}
       <div className="mb-10 grid grid-cols-3 gap-px bg-zinc-800">
         {[

@@ -39,7 +39,7 @@ const FEATURES = [
     label: "Dashboard",
     heading: "See what you've built",
     body: "Live stats from your actual logs. Consistency rate, muscle groups hit, heaviest lifts, weekly frequency. Real numbers, not motivation poster fluff.",
-    stat: "Consistent", statLabel: "summarized progress",
+    stat: "Consistent", statLabel: "data from your logs",
   },
 ];
 
@@ -132,7 +132,7 @@ export default function Page() {
             transition={{ duration: 0.5, delay: 0.6 }}
             className="mt-10 flex flex-wrap gap-4">
             <Link href="/register"
-              className="bg-white px-8 py-4 text-sm font-black text-black hover:bg-zinc-200 transition-colors">
+              className="bg-yellow-400 px-8 py-4 text-sm font-black text-black hover:bg-yellow-300 transition-colors">
               Start for free →
             </Link>
             <Link href="/login"
@@ -151,7 +151,7 @@ export default function Page() {
             { val: "PPL", label: "& more programs" },
             { val: "AI", label: "conflict-free scheduling" },
             { val: "100+", label: "exercises tracked" },
-            { val: "ZERO EXCUSES", label: "NO SLACKING" },
+            { val: "0", label: "excuses accepted" },
           ].map(({ val, label }) => (
             <div key={label} className="bg-zinc-950 px-6 py-5">
               <p className="text-2xl font-black">{val}</p>
@@ -174,21 +174,21 @@ export default function Page() {
                 Built by lifters,<br />for lifters
               </h2>
               <p className="mb-4 text-sm leading-relaxed text-zinc-400">
-                MyBro was born out of a simple frustration — great training programs exist, but life keeps getting in the way. Work, school, errands. The gym ends up skipped not because you don't want to go, but because nobody helped you fit it in.
+                MyBro was born out of a simple frustration — great training programs exist, but life keeps getting in the way. Work, school, errands. The gym ends up skipped not because you don&apos;t want to go, but because nobody helped you fit it in.
               </p>
               <p className="mb-4 text-sm leading-relaxed text-zinc-400">
-                We built MyBro to solve exactly that. An AI that doesn't just hand you a generic program, but actually looks at your week, sees the gaps, and slots your workouts in. No clashes. No rescheduling. Just show up and lift.
+                We built MyBro to solve exactly that. An AI that doesn&apos;t just hand you a generic program, but actually looks at your week, sees the gaps, and slots your workouts in. No clashes. No rescheduling. Just show up and lift.
               </p>
               <p className="text-sm leading-relaxed text-zinc-400">
-                Whether you're running PPL six days a week or squeezing in three full-body sessions around a packed schedule — MyBro keeps you consistent.
+                Whether you&apos;re running PPL six days a week or squeezing in three full-body sessions around a packed schedule — MyBro keeps you consistent.
               </p>
             </div>
             <div className="grid gap-4">
               {[
-                { val: "2026", label: "Founded" },
-                { val: "30+", label: "Exercises in the database" },
+                { val: "2024", label: "Founded" },
+                { val: "100+", label: "Exercises in the database" },
                 { val: "6", label: "Training programs supported" },
-                { val: "ZERO EXCUSES!!", label: "NO SLACKING" },
+                { val: "0", label: "Excuses tolerated" },
               ].map(({ val, label }) => (
                 <div key={label} className="flex items-center justify-between border border-zinc-800 bg-zinc-900 px-6 py-4">
                   <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{label}</p>
@@ -224,7 +224,7 @@ export default function Page() {
           <div className="grid gap-px bg-zinc-800 md:grid-cols-3">
             {[
               { step: "01", title: "Create your account", body: "Sign up, set your fitness level and goal. Takes 30 seconds." },
-              { step: "02", title: "Set your schedule", body: "Add when you're free to train and block out your busy times — school, work, life." },
+              { step: "02", title: "Set your schedule", body: "Add when you&apos;re free to train and block out your busy times — school, work, life." },
               { step: "03", title: "Let your Bro handle it", body: "Pick a program, hit generate. The AI builds your week, you just show up and lift." },
             ].map(({ step, title, body }) => (
               <div key={step} className="bg-zinc-900 px-8 py-10">
@@ -287,7 +287,7 @@ export default function Page() {
             </p>
             <div className="relative flex flex-wrap justify-center gap-4">
               <Link href="/register"
-                className="bg-white px-10 py-4 text-sm font-black text-black hover:bg-zinc-200 transition-colors">
+                className="bg-yellow-400 px-10 py-4 text-sm font-black text-black hover:bg-yellow-300 transition-colors">
                 Create free account →
               </Link>
               <Link href="/login"
@@ -303,7 +303,7 @@ export default function Page() {
       <footer className="border-t border-zinc-800 px-[5%] py-8">
         <div className="container flex flex-wrap items-center justify-between gap-4 text-xs text-zinc-600">
           <p className="font-black text-sm text-white">MyBro</p>
-          <p>© 2026 MyBro. Built for lifters who refuse to settle.</p>
+          <p>© 2024 MyBro. Built for lifters who refuse to settle.</p>
           <div className="flex gap-6">
             <Link href="/login" className="hover:text-zinc-400 transition-colors">Login</Link>
             <Link href="/register" className="hover:text-zinc-400 transition-colors">Register</Link>
