@@ -171,11 +171,11 @@ export default function Page() {
 
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="app-shell">
       <Navbar1 />
 
       {/* Hero greeting */}
-      <section className="border-b border-zinc-800 px-[5%] py-14">
+      <section className="app-section border-b border-zinc-800 px-[5%] py-14">
         <div className="container">
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-zinc-500">
             {greeting()}{userName ? `, ${userName}` : ""}
@@ -198,7 +198,7 @@ export default function Page() {
       </section>
 
       {/* Stats grid */}
-      <section className="px-[5%] py-12">
+      <section className="app-section px-[5%] py-12">
         <div className="container">
           <p className="mb-6 text-xs font-semibold uppercase tracking-widest text-zinc-500">Your stats</p>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
@@ -213,7 +213,7 @@ export default function Page() {
       </section>
 
       {/* Charts row */}
-      <section className="px-[5%] pb-12">
+      <section className="app-section px-[5%] pb-12">
         <div className="container grid gap-6 lg:grid-cols-2">
           {!loading && <WeeklyChart logs={allLogs} />}
           {!loading && <MuscleBreakdown logs={allLogs} />}
@@ -221,7 +221,7 @@ export default function Page() {
       </section>
 
       {/* Upcoming + Recent */}
-      <section className="px-[5%] pb-12">
+      <section className="app-section px-[5%] pb-12">
         <div className="container grid gap-6 lg:grid-cols-2">
 
           {/* Upcoming workouts */}
@@ -305,7 +305,7 @@ export default function Page() {
       </section>
 
       {/* Calendar */}
-      <section className="px-[5%] pb-16">
+      <section className="app-section px-[5%] pb-16">
         <div className="container">
           <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-500">This week</p>
           <div className="border border-zinc-800 bg-zinc-900 p-4 overflow-hidden">

@@ -257,7 +257,7 @@ function MusclePanel({ sessionMuscles, logs, sessionExercises }) {
         <div className="grid gap-2 text-xs text-zinc-400">
           {sessionMuscles.includes("Chest") && <p>🫁 Chest — 3–5 sets of 6–12 reps for hypertrophy</p>}
           {sessionMuscles.includes("Back") && <p>🔙 Back — focus on full range of motion</p>}
-          {sessionMuscles.includes("Legs") && <p>🦵 Legs — biggest muscle group, don't skip</p>}
+          {sessionMuscles.includes("Legs") && <p>🦵 Legs — biggest muscle group, don&apos;t skip</p>}
           {sessionMuscles.includes("Shoulders") && <p>💪 Shoulders — warm up rotator cuff first</p>}
           {sessionMuscles.includes("Abs") && <p>⚡ Abs — best trained at end of session</p>}
           {(sessionMuscles.includes("Biceps") || sessionMuscles.includes("Triceps")) && <p>💪 Arms — compounds first, isolation after</p>}
@@ -520,7 +520,7 @@ function PhaseDone({ summary, onAgain }) {
         </p>
       )}
       {!isRetroactive && (
-        <p className="mb-6 text-sm text-yellow-400">✓ Marked green on today's calendar</p>
+        <p className="mb-6 text-sm text-yellow-400">✓ Marked green on today&apos;s calendar</p>
       )}
       <div className="mb-10 grid grid-cols-3 gap-px bg-zinc-800">
         {[
@@ -586,19 +586,19 @@ export default function Page() {
   };
 
   if (authLoading) return (
-    <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
+    <div className="app-shell flex items-center justify-center">
       <p className="text-zinc-500">Loading...</p>
     </div>
   );
 
   if (!userId) return (
-    <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
+    <div className="app-shell flex items-center justify-center">
       <p className="text-zinc-500">Please <a href="/login" className="underline text-white">log in</a> first.</p>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="app-shell">
       {phase !== "session" && <Navbar1 />}
       {phase === "session" && (
         <div className="border-b border-zinc-800 flex items-center justify-between px-[5%] py-4">

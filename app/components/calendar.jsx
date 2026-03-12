@@ -4,7 +4,7 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 export default function CalendarView({ dark = false, refreshKey = 0 }) {
@@ -13,67 +13,168 @@ export default function CalendarView({ dark = false, refreshKey = 0 }) {
 
   const fetchEvents = useCallback(async () => {
     setLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user?.id) { setLoading(false); return; }
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user?.id) {
+      setLoading(false);
+      return;
+    }
+
     const uid = session.user.id;
 
     const [busyRes, scheduledRes] = await Promise.all([
       supabase.from("events").select("title, start_at, end_at").eq("user_id", uid),
-      supabase.from("schedules").select("title, start_at, end_at, completed").eq("user_id", uid),
+      supabase
+        .from("schedules")
+        .select("title, start_at, end_at, completed")
+        .eq("user_id", uid),
     ]);
 
     setEvents([
-      ...(busyRes.data ?? []).map((e) => ({
-        title: "🚫 " + e.title,
-        start: e.start_at, end: e.end_at,
-        backgroundColor: "#ef4444", borderColor: "#ef4444", textColor: "#fff",
+      ...(busyRes.data ?? []).map((event) => ({
+        title: event.title,
+        start: event.start_at,
+        end: event.end_at,
+        classNames: ["fc-event-busy"],
+        extendedProps: {
+          category: "Busy",
+          icon: "Blocked",
+        },
       })),
-      ...(scheduledRes.data ?? []).map((e) => e.completed ? ({
-        title: "✓ " + e.title,
-        start: e.start_at, end: e.end_at,
-        backgroundColor: "#16a34a", borderColor: "#15803d", textColor: "#fff",
-      }) : ({
-        title: "💪 " + e.title,
-        start: e.start_at, end: e.end_at,
-        backgroundColor: dark ? "#ffffff" : "#111111",
-        borderColor: dark ? "#e4e4e7" : "#111111",
-        textColor: dark ? "#000000" : "#ffffff",
-      })),
+      ...(scheduledRes.data ?? []).map((event) =>
+        event.completed
+          ? {
+              title: event.title,
+              start: event.start_at,
+              end: event.end_at,
+              classNames: ["fc-event-completed"],
+              extendedProps: {
+                category: "Completed",
+                icon: "Done",
+              },
+            }
+          : {
+              title: event.title,
+              start: event.start_at,
+              end: event.end_at,
+              classNames: ["fc-event-workout"],
+              extendedProps: {
+                category: "Workout",
+                icon: "Train",
+              },
+            },
+      ),
     ]);
+
     setLoading(false);
-  }, [dark]);
+  }, []);
 
-  // Refetch whenever refreshKey changes
-  useEffect(() => { fetchEvents(); }, [fetchEvents, refreshKey]);
+  useEffect(() => {
+    const loadEvents = async () => {
+      await fetchEvents();
+    };
 
-  // Refetch when tab regains focus (user comes back from workout log)
+    void loadEvents();
+  }, [fetchEvents, refreshKey]);
+
   useEffect(() => {
     const onFocus = () => fetchEvents();
     window.addEventListener("focus", onFocus);
     return () => window.removeEventListener("focus", onFocus);
   }, [fetchEvents]);
 
-  if (loading) return <p className={`py-8 text-sm ${dark ? "text-zinc-500" : "text-text-secondary"}`}>Loading calendar...</p>;
+  const summary = {
+    total: events.length,
+    busy: events.filter((event) => event.extendedProps?.category === "Busy").length,
+    workouts: events.filter((event) => event.extendedProps?.category === "Workout").length,
+    completed: events.filter((event) => event.extendedProps?.category === "Completed").length,
+  };
+
+  if (loading) {
+    return (
+      <div className={`calendar-shell ${dark ? "calendar-shell-dark" : ""}`}>
+        <div className="calendar-loading-grid">
+          <div className="calendar-loading-block h-24" />
+          <div className="calendar-loading-block h-[28rem]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div className="mb-2 flex justify-end">
+    <section className={`calendar-shell ${dark ? "calendar-shell-dark" : ""}`}>
+      <div className="calendar-shell__glow" />
+
+      <div className="calendar-shell__header">
+        <div>
+          <p className="calendar-shell__eyebrow">Training planner</p>
+          <h2 className="calendar-shell__title">Your week at a glance</h2>
+          <p className="calendar-shell__subtitle">
+            Busy blocks, planned sessions, and completed workouts in one view.
+          </p>
+        </div>
+
         <button
           onClick={fetchEvents}
-          className="border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-400 hover:border-white hover:text-white transition-colors"
+          className="calendar-refresh-button"
           title="Refresh calendar"
         >
-          ↻ Refresh
+          Refresh
         </button>
       </div>
-      <FullCalendar
-        plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
-        initialView="timeGridWeek"
-        timeZone="local"
-        height="auto"
-        events={events}
-        headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek,timeGridDay" }}
-      />
-    </div>
+
+      <div className="calendar-summary">
+        <div className="calendar-summary__card">
+          <span className="calendar-summary__label">Entries</span>
+          <strong className="calendar-summary__value">{summary.total}</strong>
+        </div>
+        <div className="calendar-summary__card">
+          <span className="calendar-dot calendar-dot-busy" />
+          <span className="calendar-summary__label">Busy</span>
+          <strong className="calendar-summary__value">{summary.busy}</strong>
+        </div>
+        <div className="calendar-summary__card">
+          <span className="calendar-dot calendar-dot-workout" />
+          <span className="calendar-summary__label">Workout</span>
+          <strong className="calendar-summary__value">{summary.workouts}</strong>
+        </div>
+        <div className="calendar-summary__card">
+          <span className="calendar-dot calendar-dot-completed" />
+          <span className="calendar-summary__label">Done</span>
+          <strong className="calendar-summary__value">{summary.completed}</strong>
+        </div>
+      </div>
+
+      <div className="calendar-frame">
+        <FullCalendar
+          plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
+          initialView="dayGridMonth"
+          timeZone="local"
+          height="auto"
+          events={events}
+          nowIndicator
+          dayMaxEvents={3}
+          expandRows
+          dayHeaderFormat={{ weekday: "short", month: "short", day: "numeric" }}
+          eventTimeFormat={{ hour: "numeric", minute: "2-digit", meridiem: "short" }}
+          slotLabelFormat={{ hour: "numeric", minute: "2-digit", meridiem: "short" }}
+          headerToolbar={{
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          }}
+          eventContent={(arg) => (
+            <div className="calendar-event-content">
+              <span className="calendar-event-content__meta">
+                {arg.event.extendedProps?.icon}
+              </span>
+              <span className="calendar-event-content__title">{arg.event.title}</span>
+            </div>
+          )}
+        />
+      </div>
+    </section>
   );
 }

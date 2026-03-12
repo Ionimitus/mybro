@@ -92,23 +92,23 @@ function FeatureRow({ feat, index }) {
 }
 
 export default function Page() {
-  const [mounted, setMounted] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    (async () => {
+    const loadSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setLoggedIn(!!session?.user);
-    })();
+    };
+
+    void loadSession();
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="app-shell">
       <Navbar1 />
 
       {/* ── Hero ── */}
-      <section className="relative flex min-h-screen flex-col justify-between overflow-hidden px-[5%] pb-16 pt-24">
+      <section className="hero-spotlight app-section relative flex min-h-screen flex-col justify-between overflow-hidden px-[5%] pb-16 pt-24">
         {/* Background grid */}
         <div className="pointer-events-none absolute inset-0 opacity-[0.04]"
           style={{ backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)", backgroundSize: "80px 80px" }} />
@@ -116,28 +116,28 @@ export default function Page() {
         {/* Big heading */}
         <div className="relative z-10 flex-1 flex flex-col justify-center">
           <motion.p
-            initial={{ opacity: 0, y: 20 }} animate={mounted ? { opacity: 1, y: 0 } : {}}
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-500">
             AI-Integrated Fitness Scheduling
           </motion.p>
 
           <motion.h1
-            initial={{ opacity: 0, y: 30 }} animate={mounted ? { opacity: 1, y: 0 } : {}}
+            initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-[13vw] font-black leading-[0.9] tracking-tight md:text-[10vw]">
-            MY<br /><span className="text-zinc-500">BRO</span>
+            className="hero-title-glow text-[13vw] font-black leading-[0.9] tracking-tight md:text-[10vw]">
+            MY<br /><span className="gold-accent-text">BRO</span>
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0 }} animate={mounted ? { opacity: 1 } : {}}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className="mt-8 max-w-md text-base text-zinc-400 md:text-lg">
             The AI that fits your workouts around your life — not the other way around.
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={mounted ? { opacity: 1, y: 0 } : {}}
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
             className="mt-10 flex flex-wrap gap-4">
             {loggedIn ? (
@@ -168,16 +168,16 @@ export default function Page() {
 
         {/* Bottom stats bar */}
         <motion.div
-          initial={{ opacity: 0 }} animate={mounted ? { opacity: 1 } : {}}
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="relative z-10 mt-16 grid grid-cols-2 gap-px border border-zinc-800 bg-zinc-800 md:grid-cols-4">
+          className="ambient-panel relative z-10 mt-16 grid grid-cols-2 gap-px bg-zinc-800 md:grid-cols-4">
           {[
             { val: "PPL", label: "& more programs" },
             { val: "AI", label: "conflict-free scheduling" },
             { val: "100+", label: "exercises tracked" },
             { val: "ZERO EXCUSES", label: "gr" },
           ].map(({ val, label }) => (
-            <div key={label} className="bg-zinc-950 px-6 py-5">
+            <div key={label} className="bg-zinc-950/90 px-6 py-5 backdrop-blur">
               <p className="text-2xl font-black">{val}</p>
               <p className="mt-0.5 text-xs text-zinc-500">{label}</p>
             </div>
@@ -189,9 +189,9 @@ export default function Page() {
       <Ticker />
 
       {/* ── About Us ── */}
-      <section id="about" className="px-[5%] py-16 md:py-24">
+      <section id="about" className="app-section px-[5%] py-16 md:py-24">
         <div className="container">
-          <div className="grid gap-12 md:grid-cols-2 md:gap-20 md:items-center">
+          <div className="soft-section grid gap-12 p-8 md:grid-cols-2 md:gap-20 md:items-center md:p-12">
             <div>
               <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">About Us</p>
               <h2 className="mb-6 text-4xl font-black leading-tight md:text-5xl">
@@ -214,7 +214,7 @@ export default function Page() {
                 { val: "6", label: "Training programs supported" },
                 { val: "ZERO EXCUSES", label: "Grind hard" },
               ].map(({ val, label }) => (
-                <div key={label} className="flex items-center justify-between border border-zinc-800 bg-zinc-900 px-6 py-4">
+                <div key={label} className="ambient-chip flex items-center justify-between px-6 py-4">
                   <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">{label}</p>
                   <p className="text-2xl font-black">{val}</p>
                 </div>
@@ -225,8 +225,9 @@ export default function Page() {
       </section>
 
       {/* ── Features ── */}
-      <section id="features" className="px-[5%] py-16 md:py-24">
+      <section id="features" className="app-section px-[5%] py-16 md:py-24">
         <div className="container">
+          <div className="soft-section p-8 md:p-10">
           <div className="mb-4 flex items-end justify-between border-b border-zinc-800 pb-8">
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">What it does</p>
@@ -237,11 +238,12 @@ export default function Page() {
             </Link>
           </div>
           {FEATURES.map((feat, i) => <FeatureRow key={i} feat={feat} index={i} />)}
+          </div>
         </div>
       </section>
 
       {/* ── How it works ── */}
-      <section className="border-y border-zinc-800 bg-zinc-900 px-[5%] py-16 md:py-24">
+      <section className="app-section border-y border-zinc-800 bg-zinc-900/60 px-[5%] py-16 md:py-24 backdrop-blur">
         <div className="container">
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">Process</p>
           <h2 className="mb-12 text-4xl font-black md:text-5xl">Up and running in minutes</h2>
@@ -251,7 +253,7 @@ export default function Page() {
               { step: "02", title: "Set your schedule", body: "Add when you&apos;re free to train and block out your busy times — school, work, life." },
               { step: "03", title: "Let your Bro handle it", body: "Pick a program, hit generate. The AI builds your week, you just show up and lift." },
             ].map(({ step, title, body }) => (
-              <div key={step} className="bg-zinc-900 px-8 py-10">
+              <div key={step} className="bg-zinc-900/90 px-8 py-10 backdrop-blur">
                 <p className="mb-6 text-5xl font-black text-zinc-800">{step}</p>
                 <h3 className="mb-3 text-xl font-black">{title}</h3>
                 <p className="text-sm text-zinc-500">{body}</p>
@@ -262,11 +264,11 @@ export default function Page() {
       </section>
 
       {/* ── FAQ ── */}
-      <section className="px-[5%] py-16 md:py-24">
+      <section className="app-section px-[5%] py-16 md:py-24">
         <div className="container max-w-3xl">
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">FAQ</p>
           <h2 className="mb-10 text-4xl font-black md:text-5xl">Common questions</h2>
-          <div className="grid gap-px bg-zinc-800">
+          <div className="soft-section grid gap-px bg-zinc-800">
             {[
               { q: "Do I need a membership?", a: "Yes — MyBro is a member-only platform. Create a free account to access the workout log, AI scheduler, exercise database, and dashboard." },
               { q: "How does the AI scheduler work?", a: "You set your weekly availability and block out busy times. Pick a training program (PPL, Upper/Lower, etc.) and the AI generates a conflict-free schedule fitted exactly to your calendar." },
@@ -287,7 +289,7 @@ export default function Page() {
       </section>
 
       {/* ── Contact Us ── */}
-      <section id="contact" className="border-y border-zinc-800 px-[5%] py-16 md:py-24">
+      <section id="contact" className="app-section border-y border-zinc-800 px-[5%] py-16 md:py-24">
         <div className="container">
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">Contact Us</p>
           <h2 className="mb-12 text-4xl font-black leading-tight md:text-5xl">Get in touch</h2>
@@ -296,9 +298,9 @@ export default function Page() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="px-[5%] py-24">
+      <section className="app-section px-[5%] py-24">
         <div className="container">
-          <div className="relative overflow-hidden border border-zinc-800 bg-zinc-900 px-8 py-20 text-center md:px-16 md:py-28">
+          <div className="ambient-panel relative overflow-hidden px-8 py-20 text-center md:px-16 md:py-28">
             {/* Background grid */}
             <div className="pointer-events-none absolute inset-0 opacity-[0.03]"
               style={{ backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)", backgroundSize: "60px 60px" }} />

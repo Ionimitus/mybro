@@ -28,7 +28,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="app-shell">
       {/* Minimal nav */}
       <nav className="flex items-center justify-between border-b border-zinc-800 px-[5%] py-4">
         <Link href="/home" className="text-lg font-black tracking-tight">MyBro</Link>
@@ -41,7 +41,7 @@ export default function Page() {
       </nav>
 
       {/* Header */}
-      <section className="border-b border-zinc-800 px-[5%] py-14">
+      <section className="app-section border-b border-zinc-800 px-[5%] py-14">
         <div className="container flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">Overview</p>
@@ -72,7 +72,7 @@ export default function Page() {
       </section>
 
       {/* Legend */}
-      <section className="border-b border-zinc-800 px-[5%] py-4">
+      <section className="app-section border-b border-zinc-800 px-[5%] py-4">
         <div className="container flex flex-wrap items-center gap-6 text-sm">
           <div className="flex items-center gap-2">
             <span className="h-3 w-3 bg-white inline-block" />
@@ -94,7 +94,7 @@ export default function Page() {
       </section>
 
       {/* Calendar */}
-      <section className="px-[5%] py-10">
+      <section className="app-section px-[5%] py-10">
         <div className="container">
           <style>{`
             .fc { color: #e4e4e7; font-family: inherit; }

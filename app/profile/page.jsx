@@ -84,11 +84,11 @@ export default function Page() {
   const selectClass = "min-h-11 border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm text-white focus:border-white focus:outline-none transition-colors appearance-none";
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="app-shell">
       <Navbar1 />
 
       {/* Header */}
-      <section className="border-b border-zinc-800 px-[5%] py-14">
+      <section className="app-section border-b border-zinc-800 px-[5%] py-14">
         <div className="container flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">Account</p>
@@ -113,7 +113,7 @@ export default function Page() {
       </section>
 
       {/* Form */}
-      <section className="px-[5%] py-12">
+      <section className="app-section px-[5%] py-12">
         <div className="container">
           {loading ? (
             <p className="text-zinc-500">Loading profile...</p>

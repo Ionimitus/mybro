@@ -7,7 +7,7 @@ import { ScheduleManager } from "./components/ScheduleManager";
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="app-shell">
       <Navbar1 />
       <ScheduleManager />
       <Footer4 />

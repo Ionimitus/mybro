@@ -5,7 +5,7 @@ import { Footer4 } from "./components/Footer4";
 
 export default function Page() {
   return (
-    <div>
+    <div className="app-shell">
       <Navbar1 />
       <Signup6 />
       <Footer4 />
