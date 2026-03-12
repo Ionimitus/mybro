@@ -174,8 +174,8 @@ export default function Page() {
           {[
             { val: "PPL", label: "& more programs" },
             { val: "AI", label: "conflict-free scheduling" },
-            { val: "100+", label: "exercises tracked" },
-            { val: "ZERO EXCUSES", label: "gr" },
+            { val: "30+", label: "exercises tracked" },
+            { val: "ZERO EXCUSES", label: "Grind hard" },
           ].map(({ val, label }) => (
             <div key={label} className="bg-zinc-950/90 px-6 py-5 backdrop-blur">
               <p className="text-2xl font-black">{val}</p>
@@ -210,7 +210,7 @@ export default function Page() {
             <div className="grid gap-4">
               {[
                 { val: "2026", label: "Founded" },
-                { val: "100+", label: "Exercises in the database" },
+                { val: "30+", label: "Exercises in the database" },
                 { val: "6", label: "Training programs supported" },
                 { val: "ZERO EXCUSES", label: "Grind hard" },
               ].map(({ val, label }) => (
@@ -273,7 +273,7 @@ export default function Page() {
               { q: "Do I need a membership?", a: "Yes — MyBro is a member-only platform. Create a free account to access the workout log, AI scheduler, exercise database, and dashboard." },
               { q: "How does the AI scheduler work?", a: "You set your weekly availability and block out busy times. Pick a training program (PPL, Upper/Lower, etc.) and the AI generates a conflict-free schedule fitted exactly to your calendar." },
               { q: "What programs are supported?", a: "PPL (Push/Pull/Legs), Upper/Lower, Full Body, Bro Split, 5/3/1, and a custom AI-decided option. More coming." },
-              { q: "Can I log custom exercises?", a: "The exercise database has 100+ movements. You can log any exercise against any muscle group from your workout log." },
+              { q: "Can I log custom exercises?", a: "The exercise database has 30+ movements. You can log any exercise against any muscle group from your workout log." },
               { q: "Is my data private?", a: "Yes. Your schedule, workouts, and profile are only accessible to your account via Supabase row-level security." },
             ].map(({ q, a }, i) => (
               <details key={i} className="group bg-zinc-950">
